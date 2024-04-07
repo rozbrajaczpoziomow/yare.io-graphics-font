@@ -153,13 +153,15 @@ var mapping = {
 	' ': (pos, height, width) => {},
 	mv: (p1, p2) => {
 		let delta = p2.map((v, i) => v - p1[i]);
-		for(var i = 1; i <= 4; ++i)
-			mapping.spirits.pop().move(p1.map((v, vi) => v + delta[vi] * (i / 4)));
-	}
+		for(var i = 1; i <= mapping.mv_splitinto; ++i)
+			mapping.spirits.pop().move(p1.map((v, vi) => v + delta[vi] * (i / mapping.mv_splitinto)));
+	},
+	mv_splitinto: 3
 }
 
 function text(pos, height, width, delimiter, content) {
-	content = content.toUpperCase()
+    mapping.lastpos = pos;
+	content = content.toUpperCase();
 	for(cid in content) {
 		var letter_pos = [pos[0] + (width + delimiter) * cid, pos[1]];
 		mapping[content[cid]](letter_pos, height, width);
@@ -172,7 +174,10 @@ function text_all(pos, height, width, delimiter) {
 
 mapping.spirits = [...my_spirits];
 
-text_all([250, 250], 60, 30, 5);
-// text([250, 250], 40, 20, 10, 'hi')
+// text_all([250, 250], 60, 30, 5);
+text([250, 250], 60, 30, 25, 'levmiseri')
 
 console.log(mapping.spirits.length, 'free spirits');
+for(mapping.spirit of mapping.spirits) {
+    mapping.spirit.move(mapping.lastpos.map(x => x + 25) ?? mapping.spirit.position);
+}
